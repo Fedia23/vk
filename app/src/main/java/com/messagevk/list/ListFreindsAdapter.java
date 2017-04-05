@@ -6,8 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.messagevk.R;
 import com.vk.sdk.api.model.VKApiUser;
 import com.vk.sdk.api.model.VKApiUserFull;
@@ -26,8 +28,9 @@ public class ListFreindsAdapter extends RecyclerView.Adapter<ListFreindsAdapter.
     public void setNewList(VKList<VKApiUserFull> list){
         this.list = list;
         if(list != null) {
-            for (VKApiUser u : list)
-                System.out.println(u.first_name.toString());
+            for (VKApiUser u : list) {
+                System.out.println(u.photo_50);
+            }
         }
         notifyDataSetChanged();
     }
@@ -46,7 +49,10 @@ public class ListFreindsAdapter extends RecyclerView.Adapter<ListFreindsAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.nameFriend.setText(list.get(position).first_name.toString());
+        String status;
+        if (list.get(position).online) { status = "online"; } else { status = "offline"; }
+        holder.nameFriend.setText(list.get(position).first_name.toString() + " " + status);
+        Glide.with(context).load(list.get(position).photo_50).centerCrop().into(holder.userFoto);
     }
 
     @Override
@@ -57,10 +63,12 @@ public class ListFreindsAdapter extends RecyclerView.Adapter<ListFreindsAdapter.
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView nameFriend;
+        private ImageView userFoto;
 
         public ViewHolder(View v) {
             super(v);
             nameFriend = (TextView)v.findViewById(R.id.nameFriend);
+            userFoto = (ImageView)v.findViewById(R.id.userImage);
         }
     }
 }

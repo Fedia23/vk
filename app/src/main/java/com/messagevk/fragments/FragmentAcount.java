@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TabHost;
 
 import com.messagevk.R;
 import com.messagevk.list.ListFreindsAdapter;
@@ -25,6 +26,8 @@ public class FragmentAcount extends Fragment {
     ListFreindsAdapter mAdapter;
     public RecyclerView.LayoutManager mLayoutManager;
 
+    private TabHost tabHost;
+
     private VKList<VKApiUserFull> list;
 
     public FragmentAcount() {
@@ -33,6 +36,15 @@ public class FragmentAcount extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_acount, container, false);
+
+        tabHost = (TabHost)v.findViewById(R.id.tabHost);
+        tabHost.setup();
+        TabHost.TabSpec tabSpec;
+        tabSpec = tabHost.newTabSpec("tag1");
+        tabSpec.setIndicator("Друзі");
+        tabSpec.setContent(R.id.rview);
+        tabHost.addTab(tabSpec);
+
         mRecyclerView = (RecyclerView) v.findViewById(R.id.rview);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -45,7 +57,7 @@ public class FragmentAcount extends Fragment {
     }
 
     private void showFriends() {
-        final VKRequest request = VKApi.friends().get(VKParameters.from(VKApiConst.FIELDS, "first_name, last_name"));
+        final VKRequest request = VKApi.friends().get(VKParameters.from(VKApiConst.FIELDS, "first_name, last_name, photo_50"));
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(final VKResponse response) {

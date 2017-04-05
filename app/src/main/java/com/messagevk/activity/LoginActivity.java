@@ -1,7 +1,8 @@
 package com.messagevk.activity;
 
+import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -13,7 +14,6 @@ import com.messagevk.R;
 import com.messagevk.fragments.FragmentAcount;
 import com.messagevk.fragments.FragmentLogin;
 import com.vk.sdk.VKAccessToken;
-import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
@@ -25,19 +25,26 @@ public class LoginActivity extends AppCompatActivity {
     FragmentTransaction fragmentTransaction;
     private FragmentLogin fragmentLogin;
     private FragmentAcount fragmentAcount;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fragmentLogin = new FragmentLogin();
+        sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        Boolean isLocked;
+        isLocked = sharedPreferences.getBoolean("sharedPreferences", false);
+        if (isLocked) {
+            startTestActivity();
+        } else {
+            fragmentLogin = new FragmentLogin();
 
-        fragmentManager = getSupportFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentManager = getSupportFragmentManager();
+            fragmentTransaction = fragmentManager.beginTransaction();
 
-        fragmentTransaction.add(R.id.activity, fragmentLogin).commit();
-
+            fragmentTransaction.add(R.id.activity, fragmentLogin).commit();
+        }
     }
 
 
@@ -51,6 +58,10 @@ public class LoginActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor ed = sharedPreferences.edit();
+                        ed.putBoolean("sharedPreferences", true);
+                        ed.commit();
                         startTestActivity();
                     }
                 });
